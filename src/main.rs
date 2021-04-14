@@ -2,12 +2,8 @@ use std::env;
 use std::str;
 use std::error::Error;
 use std::fmt;
-use std::time::SystemTime;
-use rusqlite::{ Connection };
 use reqwest::header;
-use chrono::prelude::*;
 use std::fs::File;
-use std::io::prelude::*;
 use quick_xml::Reader;
 use quick_xml::events::Event;
 
@@ -69,7 +65,6 @@ fn main() {
                                 if attribute_key == "url" {
                                     count = count + 1;
                                     println!("  Enclosure {} url: {}", count, attribute_value);
-                                    let mut savedfile: String;
                                     fetch_enclosure(attribute_value, count);
                                 }
                             }
