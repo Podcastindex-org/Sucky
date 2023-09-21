@@ -45,16 +45,25 @@ fn main() {
             let mut count = 0;
             let mut txt = Vec::new();
             let mut buf = Vec::new();
+            let mut path = Vec::new();
             loop {
                 match reader.read_event(&mut buf) {
+                    //This event fires when a full element is discovered
                     Ok(Event::Start(ref e)) => {
+                        path.push(format!("{:?}", String::from_utf8(e.name().to_vec()).unwrap()));
                         // if str::from_utf8(e.name()).unwrap() == "title" {
                         //     println!("Episode: {}");
                         // }
                     },
+                    Ok(Event::End(_)) => {
+                        path.pop();
+                    },
+                    //This event fires when a self-closing element is discovered
                     Ok(Event::Empty(ref e)) => {
                         //println!("Element: {}", str::from_utf8(e.name()).unwrap());
-                        if str::from_utf8(e.name()).unwrap() == "enclosure" {
+                        if str::from_utf8(e.name()).unwrap() == "enclosure"
+                            && path.last().unwrap() == "item"
+                        {
                             for a in e.attributes() {
                                 //println!("  {:?}", a);
                                 let attribute = a.unwrap().clone();
@@ -68,19 +77,6 @@ fn main() {
                                     fetch_enclosure(attribute_value, count);
                                 }
                             }
-
-                            // e.attributes().map(|a| {
-                            //     let attribute = a.unwrap().clone();
-                            //     let ak = attribute.key;
-                            //     let mut av = attribute.value;
-                            //     let attribute_key = str::from_utf8(ak).unwrap();
-                            //     let attribute_value = str::from_utf8(av.to_mut()).unwrap();
-                            //     if attribute_key == "enclosure" {
-                            //         println!("Enclosure url: {}", attribute_value);
-                            //         //fetch_enclosure(attribute_value);
-                            //     }
-
-                            // }).collect::<Vec<_>>();
                         }
                     },
                     Ok(Event::Text(e)) => txt.push(e.unescape_and_decode(&reader).unwrap()),
