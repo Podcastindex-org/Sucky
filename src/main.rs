@@ -50,17 +50,16 @@ fn main() {
                 match reader.read_event(&mut buf) {
                     //This event fires when a full element is discovered
                     Ok(Event::Start(ref e)) => {
-                        path.push(format!("{:?}", String::from_utf8(e.name().to_vec()).unwrap()));
-                        // if str::from_utf8(e.name()).unwrap() == "title" {
-                        //     println!("Episode: {}");
-                        // }
+                        path.push(format!("{}", str::from_utf8(e.name()).unwrap()));
+                        //println!("Element: {}", str::from_utf8(e.name()).unwrap());
                     },
                     Ok(Event::End(_)) => {
                         path.pop();
                     },
                     //This event fires when a self-closing element is discovered
                     Ok(Event::Empty(ref e)) => {
-                        //println!("Element: {}", str::from_utf8(e.name()).unwrap());
+                        //println!("Element: {}", path.last().unwrap());
+
                         if str::from_utf8(e.name()).unwrap() == "enclosure"
                             && path.last().unwrap() == "item"
                         {
